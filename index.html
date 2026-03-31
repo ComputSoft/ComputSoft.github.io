@@ -123,99 +123,133 @@
             </div>
         </div>
     </section>
-<div style="border: 1px solid #ccc; padding: 20px; max-width: 400px; border-radius: 8px;">
-  <h3>문제 풀이 확인</h3>
-  <div style="margin-bottom: 10px;">
-    <label for="userName">이름: </label>
-    <input type="text" id="userName" placeholder="이름을 입력하세요">
-  </div>
-  <div style="margin-bottom: 10px;">
-    <label for="solveDate">날짜: </label>
-    <input type="date" id="solveDate">
-  </div>
-  <button onclick="checkSolved()" style="padding: 5px 15px;">검사하기</button>
-  
-  <div id="resultMessage" style="margin-top: 15px; font-weight: bold; color: blue;"></div>
-</div>
-<style>
-  .status-table {
-    width: 100%;
-    max-width: 600px;
-    border-collapse: collapse;
-    text-align: center;
-    font-family: sans-serif;
-    margin-top: 20px;
-  }
-  .status-table th, .status-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-  }
-  .status-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-  }
-  /* 완료/미완료 색상 설정 */
-  .solved-yes {
-    color: green;
-    font-weight: bold;
-  }
-  .solved-no {
-    color: red;
-    font-weight: bold;
-  }
-</style>
-
-<h2>📅 문제 풀이 현황</h2>
-<table class="status-table">
-  <thead>
-    <tr>
-      <th>이름</th>
-      <th>날짜</th>
-      <th>문제 번호</th>
-      <th>풀이 여부</th>
-    </tr>
-  </thead>
-  <tbody id="tableBody">
-    </tbody>
-</table>
-
-<script>
-  // 이 부분에 사람들의 이름, 날짜, 문제, 풀이 여부를 계속 추가하시면 됩니다.
-  // solved: true (완료), solved: false (미완료)
-  const solvedData = [
-    { name: "홍", date: "2026-03-31", problem: "14", solved: true },
-    { name: "김", date: "2026-03-31", problem: "13", solved: false },
-    { name: "이", date: "2026-04-01", problem: "11", solved: true },
-    { name: "박", date: "2026-04-01", problem: "2", solved: false }
-  ];
-
-  // 웹페이지가 열릴 때 자동으로 표를 채워주는 함수
-  function renderTable() {
-    const tbody = document.getElementById('tableBody');
+    <style>
+      .table-container {
+        width: 100%;
+        max-width: 800px;
+        overflow-x: auto; /* 표가 길어지면 가로 스크롤 생성 */
+        margin-top: 20px;
+        border: 1px solid #ccc;
+      }
+      .matrix-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+        font-family: sans-serif;
+        white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+      }
+      .matrix-table th, .matrix-table td {
+        border: 1px solid #ddd;
+        padding: 10px 15px;
+      }
+      .matrix-table th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+      }
+      /* 스크롤할 때 이름 열(첫 번째 열)을 왼쪽에 고정 */
+      .matrix-table th:first-child,
+      .matrix-table td:first-child {
+        position: sticky;
+        left: 0;
+        font-weight: bold;
+        z-index: 1;
+      }
+      /* 첫 번째 열의 배경색 지정 (투명해지는 것 방지) */
+      .matrix-table td:first-child { background-color: #fff; }
+      .matrix-table th:first-child { background-color: #e9e9e9; z-index: 2; }
+      
+      /* 문제 번호 글자 스타일 */
+      .problem-number {
+        color: #0056b3;
+        font-weight: bold;
+      }
+    </style>
     
-    // 데이터를 하나씩 확인하면서 표의 행(<tr>)을 만듭니다
-    solvedData.forEach(data => {
-      const tr = document.createElement('tr');
-      
-      // 완료/미완료에 따라 글자와 색상을 결정
-      const statusText = data.solved ? "✅ 완료" : "❌ 미완료";
-      const statusClass = data.solved ? "solved-yes" : "solved-no";
-
-      // 표에 들어갈 내용 조립
-      tr.innerHTML = `
-        <td>${data.name}</td>
-        <td>${data.date}</td>
-        <td>${data.problem}</td>
-        <td class="${statusClass}">${statusText}</td>
-      `;
-      
-      tbody.appendChild(tr);
-    });
-  }
-
-  // 코드가 모두 준비되면 표 그리기 실행
-  window.onload = renderTable;
-</script>
+    <h2>📅 월간 문제 풀이 현황</h2>
+    <div class="table-container">
+      <table class="matrix-table">
+        <thead id="tableHead">
+          </thead>
+        <tbody id="tableBody">
+          </tbody>
+      </table>
+    </div>
+    
+    <script>
+      // 1. 표에 표시할 시작 날짜와 끝 날짜를 설정합니다 (예: 1일부터 10일까지)
+      const startDay = 1;
+      const endDay = 31; 
+    
+      // 2. 인원별 문제 풀이 데이터 기록
+      // records 안의 왼쪽 숫자가 '날짜', 오른쪽 따옴표 안이 '푼 문제 번호'입니다.
+      const progressData = [
+        {
+          name: "홍길동",
+          records: {
+            1: "101, 102",
+            2: "103",
+            4: "104, 105",
+            7: "110"
+          }
+        },
+        {
+          name: "김철수",
+          records: {
+            1: "101",
+            3: "102, 103",
+            8: "105"
+          }
+        },
+        {
+          name: "이영희",
+          records: {
+            2: "101, 102",
+            5: "103",
+            6: "104"
+          }
+        }
+      ];
+    
+      // 3. 표를 자동으로 그려주는 함수
+      function buildTable() {
+        const thead = document.getElementById('tableHead');
+        const tbody = document.getElementById('tableBody');
+    
+        // --- (A) 표 머리글(날짜) 만들기 ---
+        let headerRow = '<tr><th>이름 \\ 날짜</th>';
+        for (let d = startDay; d <= endDay; d++) {
+          headerRow += `<th>${d}일</th>`;
+        }
+        headerRow += '</tr>';
+        thead.innerHTML = headerRow;
+    
+        // --- (B) 표 본문(데이터) 채우기 ---
+        let bodyRows = '';
+        progressData.forEach(person => {
+          bodyRows += `<tr>`;
+          bodyRows += `<td>${person.name}</td>`; // 첫 번째 칸: 사람 이름
+          
+          // 설정한 날짜(1일~10일)를 순회하며 푼 문제 번호가 있는지 확인
+          for (let d = startDay; d <= endDay; d++) {
+            const solvedProblems = person.records[d];
+            
+            if (solvedProblems) {
+              // 해당 날짜에 푼 기록이 있으면 문제 번호 표시
+              bodyRows += `<td><span class="problem-number">${solvedProblems}</span></td>`;
+            } else {
+              // 기록이 없으면 빈칸
+              bodyRows += `<td></td>`; 
+            }
+          }
+          bodyRows += `</tr>`;
+        });
+        
+        tbody.innerHTML = bodyRows;
+      }
+    
+      // 코드가 모두 준비되면 표 그리기 실행
+      window.onload = buildTable;
+    </script>
     <footer>
         <p>&copy; 2026 ComputSoft. All rights reserved.</a></p>
     </footer>
