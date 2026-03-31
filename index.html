@@ -137,47 +137,84 @@
   
   <div id="resultMessage" style="margin-top: 15px; font-weight: bold; color: blue;"></div>
 </div>
-    <script>
-  // 1. 문제 풀이 기록 데이터 (원하는 만큼 추가/수정하세요)
+<style>
+  .status-table {
+    width: 100%;
+    max-width: 600px;
+    border-collapse: collapse;
+    text-align: center;
+    font-family: sans-serif;
+    margin-top: 20px;
+  }
+  .status-table th, .status-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+  }
+  .status-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  /* 완료/미완료 색상 설정 */
+  .solved-yes {
+    color: green;
+    font-weight: bold;
+  }
+  .solved-no {
+    color: red;
+    font-weight: bold;
+  }
+</style>
+
+<h2>📅 문제 풀이 현황</h2>
+<table class="status-table">
+  <thead>
+    <tr>
+      <th>이름</th>
+      <th>날짜</th>
+      <th>문제 번호</th>
+      <th>풀이 여부</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody">
+    </tbody>
+</table>
+
+<script>
+  // 이 부분에 사람들의 이름, 날짜, 문제, 풀이 여부를 계속 추가하시면 됩니다.
+  // solved: true (완료), solved: false (미완료)
   const solvedData = [
-    { name: "홍", date: "2026-03-31", problem: "11021", solved: true },
-    { name: "김", date: "2026-03-31", problem: "11022", solved: false },
-    { name: "이", date: "2026-04-01", problem: "11023", solved: true }
+    { name: "홍", date: "2026-03-31", problem: "14", solved: true },
+    { name: "김", date: "2026-03-31", problem: "13", solved: false },
+    { name: "이", date: "2026-04-01", problem: "11", solved: true },
+    { name: "박", date: "2026-04-01", problem: "2", solved: false }
   ];
 
-  // 2. 검사 버튼을 누를 때 실행되는 함수
-  function checkSolved() {
-    // 사용자가 입력한 값 가져오기
-    const inputName = document.getElementById('userName').value.trim();
-    const inputDate = document.getElementById('solveDate').value;
-    const resultDiv = document.getElementById('resultMessage');
+  // 웹페이지가 열릴 때 자동으로 표를 채워주는 함수
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    
+    // 데이터를 하나씩 확인하면서 표의 행(<tr>)을 만듭니다
+    solvedData.forEach(data => {
+      const tr = document.createElement('tr');
+      
+      // 완료/미완료에 따라 글자와 색상을 결정
+      const statusText = data.solved ? "✅ 완료" : "❌ 미완료";
+      const statusClass = data.solved ? "solved-yes" : "solved-no";
 
-    // 입력값 확인
-    if (!inputName || !inputDate) {
-      resultDiv.style.color = 'red';
-      resultDiv.innerText = "이름과 날짜를 모두 입력해주세요.";
-      return;
-    }
-
-    // 데이터 배열에서 이름과 날짜가 일치하는 기록 찾기
-    const record = solvedData.find(
-      data => data.name === inputName && data.date === inputDate
-    );
-
-    // 결과 출력
-    if (record) {
-      if (record.solved) {
-        resultDiv.style.color = 'green';
-        resultDiv.innerText = `✅ [확인 완료] ${inputName}님은 ${inputDate}에 '${record.problem}' 문제를 풀었습니다.`;
-      } else {
-        resultDiv.style.color = 'red';
-        resultDiv.innerText = `❌ [미완료] ${inputName}님은 ${inputDate}에 할당된 문제를 아직 풀지 않았습니다.`;
-      }
-    } else {
-      resultDiv.style.color = 'gray';
-      resultDiv.innerText = "해당 이름과 날짜에 일치하는 데이터가 없습니다.";
-    }
+      // 표에 들어갈 내용 조립
+      tr.innerHTML = `
+        <td>${data.name}</td>
+        <td>${data.date}</td>
+        <td>${data.problem}</td>
+        <td class="${statusClass}">${statusText}</td>
+      `;
+      
+      tbody.appendChild(tr);
+    });
   }
+
+  // 코드가 모두 준비되면 표 그리기 실행
+  window.onload = renderTable;
 </script>
     <footer>
         <p>&copy; 2026 ComputSoft. All rights reserved.</a></p>
