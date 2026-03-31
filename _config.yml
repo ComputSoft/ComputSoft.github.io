@@ -1,3 +1,13 @@
 theme: jekyll-theme-cayman
 title: 100 problem solve
 description: 활동 기간안에 백준 문제 100가지를 풀어보는 소모임
+#site setting
+locale: en-US
+title: 100 problem solve
+title_seperator: -
+name: 100 problem
+author: 
+  name: little
+  bio: Sotware Developer
+  email:
+  links:
