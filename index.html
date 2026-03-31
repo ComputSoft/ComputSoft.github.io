@@ -123,7 +123,62 @@
             </div>
         </div>
     </section>
+<div style="border: 1px solid #ccc; padding: 20px; max-width: 400px; border-radius: 8px;">
+  <h3>문제 풀이 확인</h3>
+  <div style="margin-bottom: 10px;">
+    <label for="userName">이름: </label>
+    <input type="text" id="userName" placeholder="이름을 입력하세요">
+  </div>
+  <div style="margin-bottom: 10px;">
+    <label for="solveDate">날짜: </label>
+    <input type="date" id="solveDate">
+  </div>
+  <button onclick="checkSolved()" style="padding: 5px 15px;">검사하기</button>
+  
+  <div id="resultMessage" style="margin-top: 15px; font-weight: bold; color: blue;"></div>
+</div>
+    <script>
+  // 1. 문제 풀이 기록 데이터 (원하는 만큼 추가/수정하세요)
+  const solvedData = [
+    { name: "홍", date: "2026-03-31", problem: "11021", solved: true },
+    { name: "김", date: "2026-03-31", problem: "11022", solved: false },
+    { name: "이", date: "2026-04-01", problem: "11023", solved: true }
+  ];
 
+  // 2. 검사 버튼을 누를 때 실행되는 함수
+  function checkSolved() {
+    // 사용자가 입력한 값 가져오기
+    const inputName = document.getElementById('userName').value.trim();
+    const inputDate = document.getElementById('solveDate').value;
+    const resultDiv = document.getElementById('resultMessage');
+
+    // 입력값 확인
+    if (!inputName || !inputDate) {
+      resultDiv.style.color = 'red';
+      resultDiv.innerText = "이름과 날짜를 모두 입력해주세요.";
+      return;
+    }
+
+    // 데이터 배열에서 이름과 날짜가 일치하는 기록 찾기
+    const record = solvedData.find(
+      data => data.name === inputName && data.date === inputDate
+    );
+
+    // 결과 출력
+    if (record) {
+      if (record.solved) {
+        resultDiv.style.color = 'green';
+        resultDiv.innerText = `✅ [확인 완료] ${inputName}님은 ${inputDate}에 '${record.problem}' 문제를 풀었습니다.`;
+      } else {
+        resultDiv.style.color = 'red';
+        resultDiv.innerText = `❌ [미완료] ${inputName}님은 ${inputDate}에 할당된 문제를 아직 풀지 않았습니다.`;
+      }
+    } else {
+      resultDiv.style.color = 'gray';
+      resultDiv.innerText = "해당 이름과 날짜에 일치하는 데이터가 없습니다.";
+    }
+  }
+</script>
     <footer>
         <p>&copy; 2026 ComputSoft. All rights reserved.</a></p>
     </footer>
