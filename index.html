@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComputSoft</title>
+    <style>
+        /* 부드러운 스크롤 효과를 주는 핵심 CSS */
+        html { scroll-behavior: smooth; }
+        
+        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; line-height: 1.6; }
+        
+        /* 상단에 고정되는 네비게이션 바 */
+        header { 
+            background: #222; color: white; padding: 15px 20px; 
+            position: sticky; top: 0; z-index: 1000;
+        }
+        header a { color: white; margin-right: 20px; text-decoration: none; font-weight: bold; }
+        header a:hover { color: #aaa; }
+
+        /* 각 섹션의 최소 높이를 화면 크기로 맞춰서 시원하게 보이게 함 */
+        section { padding: 80px 20px; min-height: 100vh; border-bottom: 1px solid #ddd; }
+        
+        #home { background-color: #f4f4f4; }
+        #skills { background-color: #fff; }
+        #projects { background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#skills">Skills</a>
+            <a href="#projects">Projects</a>
+        </nav>
+    </header>
+
+    <section id="home">
+        <h1>안녕하세요, ComputSoft입니다.</h1>
+    </section>
+
+    <section id="skills">
+        <h2>Skills</h2>
+        <ul>
+            <li>C++ / Python</li>
+            <li>GLSL (Shader Programming)</li>
+            <li>PyGLM</li>
+        </ul>
+    </section>
+
+    <section id="projects">
+        <h2>Projects</h2>
+        <h3>1. Ray Tracing Engine</h3>
+        <p>빛의 물리적 특성을 시뮬레이션하여 사실적인 이미지를 생성하는 레이 트레이싱 렌더러입니다. 빛의 반사와 굴절을 수학적으로 계산하여 구현했습니다.</p>
+        
+        <h3>2. GLSL 셰이더 효과</h3>
+        <p>GPU의 병렬 처리 능력을 활용하여 실시간으로 다양한 시각적 효과를 렌더링하는 프로젝트입니다.</p>
+    </section>
+
+</body>
+</html>
