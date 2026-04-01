@@ -357,7 +357,7 @@
         const tbody = document.getElementById('tableBody');  
         
         // --- (A) 표 머리글(날짜) 만들기 --- 
-        let headerRow = '<tr><th>이름 \\ 날짜</th>'; 
+        let headerRow = '<tr><th>이름  날짜</th>'; 
         for (let d = startDay; d <= endDay; d++) { 
             headerRow += `<th>${d}일</th>`; 
         } 
@@ -446,7 +446,7 @@
             for (const userId of dataset) {
                 // solved.ac 히스토리 API (해결한 문제 수 변화)
                 const apiUrl = `https://solved.ac/api/v3/user/history?handle=${userId}&topic=solvedCount`;
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
 
                 try {
                     const response = await fetch(proxyUrl);
@@ -485,6 +485,8 @@
                     console.error(`${userId} 조회 실패:`, error);
                     errorUsers.push(userId);
                 }
+
+                await sleep(500);
             }
 
             // 3. 최종 결과 화면 렌더링
