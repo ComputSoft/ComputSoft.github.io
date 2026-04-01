@@ -350,13 +350,14 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-top: 20px;
         }
-
+        
         table {
             border-collapse: collapse;
-            width: max-content; /* 내용물만큼 가로 길이 늘어남 */
+            width: 80%;          /* 남는 빈 공간 없이 100% 꽉 채우기 */
+            table-layout: fixed;  /* 모든 칸의 너비를 동일하고 균등하게 분배 */
+            min-width: 800px;     /* 창을 너무 줄였을 때 칸이 찌그러지지 않도록 최소 너비 보장 */
             text-align: center;
         }
-
         th, td {
             border: 1px solid #ddd;
             padding: 10px 12px;
@@ -375,6 +376,7 @@
             font-weight: bold;
             z-index: 2;
             box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* 고정된 열 그림자 */
+            width: 100px;
         }
         th:first-child { z-index: 3; background-color: #e9ecef; }
 
