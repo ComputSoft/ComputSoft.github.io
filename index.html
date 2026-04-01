@@ -442,7 +442,7 @@
             for (const userId of dataset) {
                 const tr = document.createElement('tr');
                 const nameTd = document.createElement('td');
-                nameTd.innerText = nameMap[userId] || userId;
+                nameTd.innerText = userset[userId] || userId;
                 tr.appendChild(nameTd);
         
                 try {
