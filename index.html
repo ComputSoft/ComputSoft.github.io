@@ -403,15 +403,23 @@
     </div>
 
     <script>
-        // ✅ 1. 스터디원 아이디 목록 (여기에 아이디를 추가/수정하세요)
-        const dataset = ['imqwd', 'clear112']; 
+        // ✅ 1. 스터디원 아이디 목록 
+        const dataset = ['clear112', 'imqwd']; 
         
         const YEAR = 2026;
         const MONTH = 4;
         const DAYS_IN_MONTH = 30; // 4월은 30일까지 있음
         const PROXY_BASE = "https://corsproxy.io/?";
         const sleep = (ms) => new Promise(res => setTimeout(res, ms));
-
+        
+        // 🚨 [추가된 핵심 코드] 영국 시간(UTC)이 아닌 한국 시간(Local) 기준으로 YYYY-MM-DD를 만드는 함수
+        function getLocalYYYYMMDD(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+        
         // 테이블 헤더(1일~30일) 생성 함수
         function buildTableHeader() {
             const headerRow = document.getElementById('headerRow');
@@ -421,64 +429,54 @@
                 headerRow.appendChild(th);
             }
         }
-
+        
         async function initTable() {
             buildTableHeader();
             const tableBody = document.getElementById('tableBody');
             const statusText = document.getElementById('status');
-
+        
             for (const userId of dataset) {
-                // 각 유저별 행(Row) 생성
                 const tr = document.createElement('tr');
                 const nameTd = document.createElement('td');
                 nameTd.innerText = userId;
                 tr.appendChild(nameTd);
-
+        
                 try {
                     const apiUrl = `https://solved.ac/api/v3/user/history?handle=${userId}&topic=solvedCount`;
                     const response = await fetch(PROXY_BASE + encodeURIComponent(apiUrl));
                     
                     if (!response.ok) throw new Error("API 오류");
                     const history = await response.json();
-
-                    // 날짜별 푼 문제의 "누적 값"을 기록하기 위한 변수
-                    // API 특성상 푼 날에만 데이터가 찍히므로, 빈 날짜는 직전 날짜의 값으로 채워야 정확히 비교 가능합니다.
-                    let maxSolvedByDate = {}; 
-                    
-                    // 히스토리 데이터를 'YYYY-MM-DD' 키값으로 정리 (해당 날짜의 가장 마지막 누적 문제 수)
-                    history.forEach(h => {
-                        const dateOnly = h.timestamp.split('T')[0];
-                        maxSolvedByDate[dateOnly] = h.value;
-                    });
-
+        
                     // 1일~30일까지 돌면서 전날과 비교
                     for (let i = 1; i <= DAYS_IN_MONTH; i++) {
                         const todayStr = `${YEAR}-04-${String(i).padStart(2, '0')}`;
                         
-                        // 어제 날짜 구하기
+                        // 🚨 [수정된 코드] 로컬 타임 변환 함수를 사용하여 어제 날짜 구하기
                         const yesterdayObj = new Date(YEAR, MONTH - 1, i - 1);
-                        const yesterdayStr = yesterdayObj.toISOString().split('T')[0];
-
-                        // 특정 날짜에 기록이 없으면, 전체 히스토리를 뒤져서 그 이전의 가장 최근 누적 값을 찾아야 함
+                        const yesterdayStr = getLocalYYYYMMDD(yesterdayObj);
+        
                         function getCountBefore(dateStr) {
                             let lastCount = 0;
                             for (const rec of history) {
-                                const recDate = rec.timestamp.split('T')[0];
-                                if (recDate <= dateStr) {
+                                // 🚨 [수정된 코드] API에서 받은 UTC 시간을 한국 시간으로 바꿔서 비교
+                                const recDateObj = new Date(rec.timestamp);
+                                const recDateStr = getLocalYYYYMMDD(recDateObj);
+                                
+                                if (recDateStr <= dateStr) {
                                     lastCount = rec.value;
                                 } else {
-                                    break; // 히스토리는 시간순 정렬이므로 더 볼 필요 없음
+                                    break; // API 데이터가 시간순이므로 더 볼 필요 없음
                                 }
                             }
                             return lastCount;
                         }
-
+        
                         const countToday = getCountBefore(todayStr);
                         const countYesterday = getCountBefore(yesterdayStr);
-
+        
                         const td = document.createElement('td');
-
-                        // 오늘의 누적 문제 수가 어제의 누적 문제 수보다 크다면 오늘 문제를 푼 것 (O)
+        
                         if (countToday > countYesterday) {
                             td.innerHTML = `<span class="solved">O</span>`;
                         } else {
@@ -486,28 +484,24 @@
                         }
                         tr.appendChild(td);
                     }
-
+        
                 } catch (e) {
                     console.error(`${userId} 데이터 로드 실패:`, e);
-                    // 에러 발생 시 모든 칸을 에러 표시로 채움
                     for (let i = 1; i <= DAYS_IN_MONTH; i++) {
                         const td = document.createElement('td');
                         td.innerHTML = `<span class="unsolved" title="통신 에러">⚠️</span>`;
                         tr.appendChild(td);
                     }
                 }
-
-                // 완성된 행을 테이블에 추가
+        
                 tableBody.appendChild(tr);
-                
-                // 서버 차단(Rate Limit) 방지를 위한 대기 시간
                 await sleep(400); 
             }
-
+        
             statusText.innerText = "데이터 로딩 완료!";
             statusText.style.color = "#28a745";
         }
-
+        
         // 페이지가 열리면 실행
         window.onload = initTable;
     </script>
