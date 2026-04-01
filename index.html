@@ -405,7 +405,11 @@
     <script>
         // ✅ 1. 스터디원 아이디 목록 
         const dataset = ['clear112', 'imqwd', 'hyulef']; 
-        
+        const userset = {
+            'clear112': '윤두완',
+            'imqwd': '박지원',
+            'hyulef': '이승우'
+        };
         const YEAR = 2026;
         const MONTH = 4;
         const DAYS_IN_MONTH = 30; // 4월은 30일까지 있음
@@ -438,7 +442,7 @@
             for (const userId of dataset) {
                 const tr = document.createElement('tr');
                 const nameTd = document.createElement('td');
-                nameTd.innerText = userId;
+                nameTd.innerText = nameMap[userId] || userId;
                 tr.appendChild(nameTd);
         
                 try {
