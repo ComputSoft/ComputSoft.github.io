@@ -465,15 +465,15 @@
                         function getCountBefore(dateStr) {
                             let lastCount = 0;
                             for (const rec of history) {
-                                // 🚨 [수정된 코드] API에서 받은 UTC 시간을 한국 시간으로 바꿔서 비교
-                                const recDateObj = new Date(rec.timestamp);
-                                recDateObj.setMinutes(recDateObj.getMinutes() - 1);
-                                const recDateStr = getLocalYYYYMMDD(recDateObj);
-                                
+                            // 🚨 [수정된 핵심 코드]
+                            // Date 객체로 변환하여 한국 시간(+9시간)이 적용되는 것을 원천 차단!
+                            // API 데이터(예: "2026-04-01T15:00:00Z")에서 'T'를 기준으로 앞의 날짜만 자릅니다.
+                                const recDateStr = rec.timestamp.split('T')[0];
+                            
                                 if (recDateStr <= dateStr) {
                                     lastCount = rec.value;
                                 } else {
-                                    break; // API 데이터가 시간순이므로 더 볼 필요 없음
+                                    break; 
                                 }
                             }
                             return lastCount;
