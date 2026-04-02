@@ -463,7 +463,7 @@
                         const yesterdayStr = getLocalYYYYMMDD(yesterdayObj);
         
                         function getCountBefore(dateStr) {
-                            let lastCount = 0;
+                            let lastCount = history.length > 0 ? history[0].value : 0;
                             for (const rec of history) {
                             // 🚨 [수정된 핵심 코드]
                             // Date 객체로 변환하여 한국 시간(+9시간)이 적용되는 것을 원천 차단!
