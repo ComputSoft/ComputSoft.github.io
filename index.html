@@ -463,20 +463,23 @@
                         const yesterdayStr = getLocalYYYYMMDD(yesterdayObj);
         
                         function getCountBefore(dateStr) {
-                            let lastCount = history.length > 0 ? history[0].value : 0;
-                            for (const rec of history) {
-                            // 🚨 [수정된 핵심 코드]
-                            // Date 객체로 변환하여 한국 시간(+9시간)이 적용되는 것을 원천 차단!
-                            // API 데이터(예: "2026-04-01T15:00:00Z")에서 'T'를 기준으로 앞의 날짜만 자릅니다.
+                            // 1. 검사하려는 날짜(dateStr)보다 작거나 같은(과거의) 기록만 모두 필터링합니다.
+                            const validRecords = history.filter(rec => {
+                                // API의 UTC 시간에서 날짜(YYYY-MM-DD)만 잘라냅니다.
+                                // 백준의 하루 리셋 시점(아침 6시)과 UTC의 시간 차이가 절묘하게 맞아떨어져 정확한 기준이 됩니다.
                                 const recDateStr = rec.timestamp.split('T')[0];
-                            
-                                if (recDateStr <= dateStr) {
-                                    lastCount = rec.value;
-                                } else {
-                                    break; 
-                                }
+                                return recDateStr <= dateStr;
+                            });
+        
+                            // 2. 해당하는 기록이 있다면, 그 중 가장 큰 값(가장 최근 누적 문제 수)을 반환합니다.
+                            if (validRecords.length > 0) {
+                                return Math.max(...validRecords.map(r => r.value));
+                            } 
+                            // 3. 기록이 없다면 (최초 로그인/연동 이전의 과거 날짜들)
+                            // 갑자기 문제가 0에서 100으로 뛰는 것을 막기 위해, 전체 기록 중 가장 작은 값(최초 문제 수)을 반환합니다.
+                            else {
+                                return history.length > 0 ? Math.min(...history.map(r => r.value)) : 0;
                             }
-                            return lastCount;
                         }
         
                         const countToday = getCountBefore(todayStr);
